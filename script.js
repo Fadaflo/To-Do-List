@@ -2,26 +2,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
-    const newDayButton = document.getElementById('newDayButton');
+    const viewHistoryButton = document.getElementById('viewHistoryButton');
     const backupButton = document.getElementById('backupButton');
     const confirmBackupButton = document.getElementById('confirmBackupButton');
     const cancelBackupButton = document.getElementById('cancelBackupButton');
+    const closeHistoryButton = document.getElementById('closeHistoryButton');
     const closeConfirmationButton = document.getElementById('closeConfirmationButton');
+    const historyModal = document.getElementById('historyModal');
     const backupModal = document.getElementById('backupModal');
     const confirmationModal = document.getElementById('confirmationModal');
     const currentDate = document.getElementById('currentDate');
+    const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
     const deleteSelectedButton = document.getElementById('deleteSelectedButton');
+    const historyList = document.getElementById('historyList');
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     let history = JSON.parse(localStorage.getItem('history')) || [];
     let deleteMode = false;
-    let currentDesign = 1;
 
     const renderDate = () => {
         const today = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         currentDate.textContent = today.toLocaleDateString('de-DE', options);
+    };
+
+    const renderTime = () => {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        currentTime.textContent = `${hours}:${minutes}:${seconds}`;
     };
 
     const renderTasks = () => {
@@ -40,12 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderHistory = () => {
-        historyList.innerHTML = '';
-        history.forEach(task => {
-            const li = document.createElement('li');
-            li.textContent = `${task.text} - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`;
-            historyList.appendChild(li);
-        });
+        historyList.innerHTML = ''; // Liste wird immer aktualisiert
+        if (history.length === 0) {
+            historyList.innerHTML = '<li>Keine erledigten Aufgaben vorhanden.</li>';
+        } else {
+            history.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = `${task.text} - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`;
+                historyList.appendChild(li);
+            });
+        }
     };
 
     const toggleTaskCompletion = (index) => {
@@ -79,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
         renderTasks();
-        renderHistory();
     };
 
     const toggleDeleteMode = () => {
@@ -100,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('history', JSON.stringify(history));
     };
 
-    const scheduleNextDayCheck = () => {
-        const now = new Date();
-        const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
-        setTimeout(() => {
-            startNewDay();
-            scheduleNextDayCheck(); // Reschedule for the next day
-        }, msUntilMidnight);
+    const openHistoryModal = () => {
+        renderHistory();
+        historyModal.classList.remove('hidden');
+    };
+
+    const closeHistoryModal = () => {
+        historyModal.classList.add('hidden');
     };
 
     const openBackupModal = () => {
@@ -139,31 +153,28 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.classList.add('hidden');
     };
 
-    const changeDesign = () => {
-        document.body.classList.remove(
-            `fire-theme`, `galaxy-theme`, `dark-theme`, `minimal-theme`, `ocean-theme`, 
-            `forest-theme`, `luxury-theme`, `neon-theme`, `futuristic-theme`, `antique-theme`
-        );
-        currentDesign = currentDesign === 10 ? 1 : currentDesign + 1;
-        const designClass = [
-            'fire-theme', 'galaxy-theme', 'dark-theme', 'minimal-theme', 'ocean-theme', 
-            'forest-theme', 'luxury-theme', 'neon-theme', 'futuristic-theme', 'antique-theme'
-        ][currentDesign - 1];
-        document.body.classList.add(designClass);
+    const scheduleNextDayCheck = () => {
+        const now = new Date();
+        const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
+        setTimeout(() => {
+            startNewDay();
+            scheduleNextDayCheck(); // Reschedule for the next day
+        }, msUntilMidnight);
     };
 
     addTaskButton.addEventListener('click', addTask);
-    newDayButton.addEventListener('click', startNewDay);
+    viewHistoryButton.addEventListener('click', openHistoryModal);
     backupButton.addEventListener('click', openBackupModal);
     confirmBackupButton.addEventListener('click', createBackup);
     cancelBackupButton.addEventListener('click', closeBackupModal);
+    closeHistoryButton.addEventListener('click', closeHistoryModal);
     closeConfirmationButton.addEventListener('click', closeConfirmationModal);
     toggleDeleteModeButton.addEventListener('click', toggleDeleteMode);
     deleteSelectedButton.addEventListener('click', deleteSelectedTasks);
-    changeDesignButton.addEventListener('click', changeDesign);
 
     renderDate();
+    renderTime();
+    setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
-    renderHistory();
     scheduleNextDayCheck(); // Start the first check for midnight
 });
