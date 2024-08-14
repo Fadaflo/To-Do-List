@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine To-Do Liste</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="fire-theme">
+    <div class="container">
+        <h1 class="title">Meine To-Do Liste</h1>
+        <p id="currentDate" class="date"></p>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Neue Aufgabe eingeben...">
+            <button id="addTaskButton">+</button>
+        </div>
+        <ul id="taskList" class="task-list"></ul>
+        <div class="button-container">
+            <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
+            <button id="deleteSelectedButton" class="button hidden">Auswahl löschen</button>
+            <button id="newDayButton" class="button">Neuer Tag</button>
+        </div>
+        <div class="bottom-buttons">
+            <button id="backupButton" class="bottom-button">Speichern</button>
+            <button id="changeDesignButton" class="bottom-button">Design ändern</button>
+        </div>
+    </div>
+    
+    <div id="backupModal" class="hidden">
+        <div class="modal-container">
+            <h2 class="modal-title">Backup erstellen?</h2>
+            <p>Möchtest du ein Backup erstellen?</p>
+            <div class="modal-buttons">
+                <button id="confirmBackupButton" class="modal-button">Ja</button>
+                <button id="cancelBackupButton" class="modal-button">Nein</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmationModal" class="hidden">
+        <div class="modal-container">
+            <h2 class="modal-title">Bestätigung</h2>
+            <p>Das Backup war erfolgreich!</p>
+            <button id="closeConfirmationButton" class="modal-button">OK</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
