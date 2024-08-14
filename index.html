@@ -11,7 +11,7 @@
     <div class="container">
         <h1 class="title">Meine To-Do Liste</h1>
         <p id="currentDate" class="date"></p>
-        <p id="currentTime" class="time"></p> <!-- Digitale Uhr -->
+        <p id="currentTime" class="time"></p>
         <div class="task-input">
             <input type="text" id="taskInput" placeholder="Neue Aufgabe eingeben...">
             <button id="addTaskButton">+</button>
@@ -20,11 +20,11 @@
         <div class="button-container">
             <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
             <button id="deleteSelectedButton" class="button hidden">Auswahl löschen</button>
-            <button id="viewHistoryButton" class="button">Verlauf</button> <!-- Neuer Verlauf Button -->
+            <button id="viewHistoryButton" class="button">Verlauf</button>
         </div>
     </div>
     
-    <div id="historyModal" class="hidden modal">
+    <div id="historyModal" class="modal hidden">
         <div class="modal-container">
             <h2 class="modal-title">Erledigte Aufgaben</h2>
             <ul id="historyList" class="task-list"></ul>
@@ -33,7 +33,7 @@
         </div>
     </div>
     
-    <div id="backupModal" class="hidden modal">
+    <div id="backupModal" class="modal hidden">
         <div class="modal-container">
             <h2 class="modal-title">Backup erstellen?</h2>
             <p>Möchtest du ein Backup erstellen?</p>
@@ -44,7 +44,7 @@
         </div>
     </div>
     
-    <div id="confirmationModal" class="hidden modal">
+    <div id="confirmationModal" class="modal hidden">
         <div class="modal-container">
             <h2 class="modal-title">Bestätigung</h2>
             <p>Das Backup war erfolgreich!</p>
