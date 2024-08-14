@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderHistory = () => {
-        historyList.innerHTML = ''; // Liste wird immer aktualisiert
+        historyList.innerHTML = '';
         if (history.length === 0) {
             historyList.innerHTML = '<li>Keine erledigten Aufgaben vorhanden.</li>';
         } else {
@@ -116,19 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openHistoryModal = () => {
         renderHistory();
-        historyModal.classList.remove('hidden');
+        historyModal.style.display = 'flex';
     };
 
     const closeHistoryModal = () => {
-        historyModal.classList.add('hidden');
+        historyModal.style.display = 'none';
     };
 
     const openBackupModal = () => {
-        backupModal.classList.remove('hidden');
+        backupModal.style.display = 'flex';
     };
 
     const closeBackupModal = () => {
-        backupModal.classList.add('hidden');
+        backupModal.style.display = 'none';
     };
 
     const createBackup = () => {
@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showConfirmationModal = () => {
-        confirmationModal.classList.remove('hidden');
+        confirmationModal.style.display = 'flex';
     };
 
     const closeConfirmationModal = () => {
-        confirmationModal.classList.add('hidden');
+        confirmationModal.style.display = 'none';
     };
 
     const scheduleNextDayCheck = () => {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
         setTimeout(() => {
             startNewDay();
-            scheduleNextDayCheck(); // Reschedule for the next day
+            scheduleNextDayCheck();
         }, msUntilMidnight);
     };
 
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderDate();
     renderTime();
-    setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
+    setInterval(renderTime, 1000);
     renderTasks();
-    scheduleNextDayCheck(); // Start the first check for midnight
+    scheduleNextDayCheck();
 });
