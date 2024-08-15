@@ -15,7 +15,7 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    max-width: 360px; /* Max-Breite auf 360px reduziert */
+    max-width: 300px; /* Max-Breite auf 360px reduziert */
     width: 100%;
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
