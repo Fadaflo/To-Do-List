@@ -15,53 +15,13 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    max-width: 400px;
+    max-width: 360px; /* Max-Breite auf 360px reduziert */
     width: 100%;
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     transition: background 0.5s ease, box-shadow 0.5s ease;
-}
-
-/* Media Queries für kleinere Bildschirme */
-@media (max-width: 480px) {
-    .container {
-        max-width: 90%; /* Breite auf 90% des Bildschirms reduzieren */
-        padding: 15px; /* Geringeres Padding auf kleineren Geräten */
-    }
-
-    .title {
-        font-size: 2rem; /* Kleinere Schriftgröße für den Titel */
-    }
-
-    .task-input button {
-        padding: 8px;
-        font-size: 1.2rem; /* Kleinere Buttons für kleinere Bildschirme */
-    }
-
-    .button-container {
-        flex-direction: column; /* Buttons untereinander anordnen */
-    }
-
-    .button {
-        margin: 10px 0; /* Vertikaler Abstand zwischen den Buttons */
-        width: 100%; /* Buttons auf volle Breite setzen */
-    }
-
-    .modal-container {
-        max-width: 90%; /* Modales Fenster passt sich an die Bildschirmbreite an */
-        padding: 15px; /* Geringeres Padding im modalen Fenster */
-    }
-
-    .modal-title {
-        font-size: 1.2rem; /* Kleinere Schriftgröße für die Titel in modalen Fenstern */
-    }
-
-    .modal-button {
-        width: 100%; /* Modal-Buttons auf volle Breite setzen */
-        margin-top: 10px; /* Abstand zwischen den Buttons */
-    }
 }
 
 .title {
@@ -162,7 +122,7 @@ body {
 
 .button-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between; /* Buttons nebeneinander anordnen */
     margin-bottom: 20px;
 }
 
@@ -177,6 +137,7 @@ body {
     background: linear-gradient(45deg, #00c8a5, #007a6f);
     box-shadow: 0 0 10px rgba(0, 200, 165, 0.5);
     margin: 0 5px;
+    width: 48%; /* Buttons auf 48% Breite setzen */
 }
 
 .button:hover {
@@ -199,7 +160,7 @@ body {
 }
 
 .modal-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(25, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
     max-width: 300px;
@@ -220,9 +181,12 @@ body {
 
 .modal-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Buttons nebeneinander anordnen */
+    flex-wrap: nowrap; /* Verhindert, dass die Buttons umbrechen */
     margin-top: 20px;
+    width: 100%; /* Stelle sicher, dass der Container die volle Breite nutzt */
 }
+
 
 .modal-button {
     padding: 10px;
@@ -232,8 +196,9 @@ body {
     color: #0f0f3d;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    width: 45%;
+    width: 48%; /* Modal-Buttons auf 48% Breite setzen */
     box-shadow: 0 0 10px rgba(0, 200, 165, 0.5);
+    text-align: center;
 }
 
 .modal-button:hover {
