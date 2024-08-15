@@ -15,7 +15,7 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    max-width: 300px; /* Max-Breite auf 360px reduziert */
+    max-width: 300px;
     width: 100%;
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
@@ -122,8 +122,14 @@ body {
 
 .button-container {
     display: flex;
+    flex-direction: column; /* Buttons untereinander anordnen */
+    gap: 10px; /* Abstand zwischen den Buttons */
+}
+
+.button-row {
+    display: flex;
     justify-content: space-between; /* Buttons nebeneinander anordnen */
-    margin-bottom: 20px;
+    width: 100%;
 }
 
 .button {
@@ -136,8 +142,11 @@ body {
     color: #0f0f3d;
     background: linear-gradient(45deg, #00c8a5, #007a6f);
     box-shadow: 0 0 10px rgba(0, 200, 165, 0.5);
-    margin: 0 5px;
     width: 48%; /* Buttons auf 48% Breite setzen */
+}
+
+.full-width {
+    width: 100%; /* Volle Breite für den Speichern-Button */
 }
 
 .button:hover {
@@ -186,7 +195,6 @@ body {
     margin-top: 20px;
     width: 100%; /* Stelle sicher, dass der Container die volle Breite nutzt */
 }
-
 
 .modal-button {
     padding: 10px;
