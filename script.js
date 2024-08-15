@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
-            li.textContent = task.text;
+            li.textContent = `${task.text} (Erstellt am: ${task.createdDate})`;
             li.className = task.completed ? 'completed' : '';
             li.dataset.date = task.completed ? `Erledigt am: ${task.completedDate}` : '';
             li.addEventListener('click', () => toggleTaskCompletion(index));
@@ -91,23 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const checkDateChange = () => {
         const today = new Date().toLocaleDateString('de-DE');
-        const completedTasks = tasks.filter(task => task.completed && task.createdDate !== today);
-        if (completedTasks.length > 0) {
-            history = history.concat(completedTasks);
-            tasks = tasks.filter(task => !task.completed || task.createdDate === today);
-            saveTasks();
-            renderTasks();
-        }
-    };
-
-    const checkForNewDay = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
-
-        if (lastCheckDate !== today) {
-            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
-            localStorage.setItem('lastCheckDate', today);
-        }
+        tasks.forEach((task, index) => {
+            if (task.createdDate !== today) {
+                if (task.completed) {
+                    history.push(task); // Erledigte Aufgaben in den Verlauf verschieben
+                    tasks.splice(index, 1); // Entferne erledigte Aufgaben von der Hauptliste
+                } else {
+                    task.createdDate = today; // Aktualisiere das Erstellungsdatum für nicht erledigte Aufgaben
+                }
+            }
+        });
+        saveTasks();
+        renderTasks();
     };
 
     const toggleDeleteMode = () => {
@@ -173,6 +168,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeConfirmationModal = () => {
         confirmationModal.style.display = 'none';
+    };
+
+    const checkForNewDay = () => {
+        const today = new Date().toLocaleDateString('de-DE');
+        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
+
+        if (lastCheckDate !== today) {
+            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
+            localStorage.setItem('lastCheckDate', today);
+        }
     };
 
     addTaskButton.addEventListener('click', addTask);
