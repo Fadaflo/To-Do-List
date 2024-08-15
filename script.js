@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentDate = document.getElementById('currentDate');
     const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
+    const deleteSelectedButton = document.getElementById('deleteSelectedButton');
     const historyList = document.getElementById('historyList');
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -156,13 +157,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
             const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
+
+            // Create a download link and trigger the download
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
+            if (navigator.userAgent.match(/Android|iPhone|iPad|iPod/i)) {
+                // For mobile devices, append link to the body
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                link.click(); // For desktop
+            }
+
             URL.revokeObjectURL(url);
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
