@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
         setTimeout(() => {
             startNewDay();
-            scheduleNextDayCheck();
+            scheduleNextDayCheck(); // Reschedule for the next day
         }, msUntilMidnight);
     };
 
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderDate();
     renderTime();
-    setInterval(renderTime, 1000);
+    setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
-    scheduleNextDayCheck();
+    scheduleNextDayCheck(); // Start the first check for midnight
 });
