@@ -152,27 +152,35 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTasksModal.style.display = 'none';
     };
 
+    const isWebView = () => {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        return (/wv/.test(userAgent) || /Android.*Version\/[\d.]+.*Chrome\/[\.0-9]* Mobile/.test(userAgent));
+    };
+
     const createBackup = () => {
         if (history.length > 0) {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
             const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
 
-            // Create a download link and trigger the download
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+            if (isWebView()) {
+                const url = URL.createObjectURL(blob);
+                window.location.href = url;
+                alert("Du wirst nun zu einer Seite weitergeleitet, um das Backup herunterzuladen.");
+            } else {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
 
-            // Append to the body, click and remove the link (cross-device solution)
-            document.body.appendChild(link);
+                document.body.appendChild(link);
 
-            setTimeout(() => {
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100); // 100ms Verzögerung, um den Download auf mobilen Geräten zu unterstützen
-
+                setTimeout(() => {
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100); 
+            }
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
         }
@@ -208,48 +216,3 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
 });
-
-
-
-
-
-
-
-
-
-const isWebView = () => {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    return (/wv/.test(userAgent) || /Android.*Version\/[\d.]+.*Chrome\/[\.0-9]* Mobile/.test(userAgent));
-};
-
-const createBackup = () => {
-    if (history.length > 0) {
-        const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
-        const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
-        const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
-
-        if (isWebView()) {
-            // Redirect to download page
-            const url = URL.createObjectURL(blob);
-            window.location.href = url;
-            alert("Du wirst nun zu einer Seite weitergeleitet, um das Backup herunterzuladen.");
-        } else {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-
-            document.body.appendChild(link);
-
-            setTimeout(() => {
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100); 
-        }
-    } else {
-        alert('Keine erledigten Aufgaben zum Sichern.');
-    }
-    closeBackupModal();
-    showConfirmationModal();
-};
