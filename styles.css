@@ -24,6 +24,46 @@ body {
     transition: background 0.5s ease, box-shadow 0.5s ease;
 }
 
+/* Media Queries für kleinere Bildschirme */
+@media (max-width: 480px) {
+    .container {
+        max-width: 90%; /* Breite auf 90% des Bildschirms reduzieren */
+        padding: 15px; /* Geringeres Padding auf kleineren Geräten */
+    }
+
+    .title {
+        font-size: 2rem; /* Kleinere Schriftgröße für den Titel */
+    }
+
+    .task-input button {
+        padding: 8px;
+        font-size: 1.2rem; /* Kleinere Buttons für kleinere Bildschirme */
+    }
+
+    .button-container {
+        flex-direction: column; /* Buttons untereinander anordnen */
+    }
+
+    .button {
+        margin: 10px 0; /* Vertikaler Abstand zwischen den Buttons */
+        width: 100%; /* Buttons auf volle Breite setzen */
+    }
+
+    .modal-container {
+        max-width: 90%; /* Modales Fenster passt sich an die Bildschirmbreite an */
+        padding: 15px; /* Geringeres Padding im modalen Fenster */
+    }
+
+    .modal-title {
+        font-size: 1.2rem; /* Kleinere Schriftgröße für die Titel in modalen Fenstern */
+    }
+
+    .modal-button {
+        width: 100%; /* Modal-Buttons auf volle Breite setzen */
+        margin-top: 10px; /* Abstand zwischen den Buttons */
+    }
+}
+
 .title {
     margin-bottom: 10px;
     font-size: 2.5rem;
@@ -204,8 +244,6 @@ body {
 .hidden {
     display: none;
 }
-
-
 
 .task-list::-webkit-scrollbar {
     width: 8px;
