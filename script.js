@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
     const viewHistoryButton = document.getElementById('viewHistoryButton');
+    const saveTasksButton = document.getElementById('saveTasksButton');
     const backupButton = document.getElementById('backupButton');
     const confirmBackupButton = document.getElementById('confirmBackupButton');
     const cancelBackupButton = document.getElementById('cancelBackupButton');
@@ -11,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyModal = document.getElementById('historyModal');
     const backupModal = document.getElementById('backupModal');
     const confirmationModal = document.getElementById('confirmationModal');
+    const saveTasksModal = document.getElementById('saveTasksModal');
+    const confirmSaveButton = document.getElementById('confirmSaveButton');
+    const cancelSaveButton = document.getElementById('cancelSaveButton');
     const currentDate = document.getElementById('currentDate');
     const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
-            li.textContent = `${task.text} (Erstellt am: ${task.createdDate})`;
+            li.textContent = task.text;
             li.className = task.completed ? 'completed' : '';
             li.dataset.date = task.completed ? `Erledigt am: ${task.completedDate}` : '';
             li.addEventListener('click', () => toggleTaskCompletion(index));
@@ -89,27 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const checkDateChange = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const updatedTasks = [];
-        tasks.forEach(task => {
-            if (task.createdDate !== today) {
-                if (task.completed) {
-                    // Aufgabe erledigt, also in den Verlauf verschieben
-                    history.push(task);
-                } else {
-                    // Aufgabe nicht erledigt, also das Erstellungsdatum auf heute aktualisieren
-                    task.createdDate = today;
-                    updatedTasks.push(task);
-                }
-            } else {
-                // Aufgabe bleibt unverändert
-                updatedTasks.push(task);
-            }
-        });
-        tasks = updatedTasks;
-        saveTasks();
-        renderTasks();
+    const saveCompletedTasks = () => {
+        const completedTasks = tasks.filter(task => task.completed);
+        if (completedTasks.length > 0) {
+            completedTasks.forEach(task => {
+                task.completedDate = new Date().toLocaleDateString('de-DE');
+            });
+            history = history.concat(completedTasks);
+            tasks = tasks.filter(task => !task.completed);
+            saveTasks();
+            renderTasks();
+        }
     };
 
     const toggleDeleteMode = () => {
@@ -155,6 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
         backupModal.style.display = 'none';
     };
 
+    const openSaveTasksModal = () => {
+        saveTasksModal.style.display = 'flex';
+    };
+
+    const closeSaveTasksModal = () => {
+        saveTasksModal.style.display = 'none';
+    };
+
     const createBackup = () => {
         const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
         const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
@@ -177,18 +179,14 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'none';
     };
 
-    const checkForNewDay = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
-
-        if (lastCheckDate !== today) {
-            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
-            localStorage.setItem('lastCheckDate', today);
-        }
-    };
-
     addTaskButton.addEventListener('click', addTask);
     viewHistoryButton.addEventListener('click', openHistoryModal);
+    saveTasksButton.addEventListener('click', openSaveTasksModal);
+    confirmSaveButton.addEventListener('click', () => {
+        saveCompletedTasks();
+        closeSaveTasksModal();
+    });
+    cancelSaveButton.addEventListener('click', closeSaveTasksModal);
     backupButton.addEventListener('click', openBackupModal);
     confirmBackupButton.addEventListener('click', createBackup);
     cancelBackupButton.addEventListener('click', closeBackupModal);
@@ -201,6 +199,4 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTime();
     setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
-    setInterval(checkForNewDay, 60000); // Überprüft alle 60 Sekunden, ob ein neuer Tag begonnen hat
-    checkForNewDay(); // Überprüft das Datum bei jedem Start der App
 });
