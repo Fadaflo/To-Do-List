@@ -91,16 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const checkDateChange = () => {
         const today = new Date().toLocaleDateString('de-DE');
-        tasks.forEach((task, index) => {
+        const updatedTasks = [];
+        tasks.forEach(task => {
             if (task.createdDate !== today) {
                 if (task.completed) {
-                    history.push(task); // Erledigte Aufgaben in den Verlauf verschieben
-                    tasks.splice(index, 1); // Entferne erledigte Aufgaben von der Hauptliste
+                    // Aufgabe erledigt, also in den Verlauf verschieben
+                    history.push(task);
                 } else {
-                    task.createdDate = today; // Aktualisiere das Erstellungsdatum für nicht erledigte Aufgaben
+                    // Aufgabe nicht erledigt, also das Erstellungsdatum auf heute aktualisieren
+                    task.createdDate = today;
+                    updatedTasks.push(task);
                 }
+            } else {
+                // Aufgabe bleibt unverändert
+                updatedTasks.push(task);
             }
         });
+        tasks = updatedTasks;
         saveTasks();
         renderTasks();
     };
