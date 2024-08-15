@@ -81,32 +81,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addTask = () => {
         if (taskInput.value.trim() !== '') {
-            tasks.push({ text: taskInput.value.trim(), completed: false });
+            const today = new Date().toLocaleDateString('de-DE');
+            tasks.push({ text: taskInput.value.trim(), completed: false, createdDate: today });
             taskInput.value = '';
             saveTasks();
             renderTasks();
         }
     };
 
-    const startNewDay = () => {
-        const completedTasks = tasks.filter(task => task.completed);
-        history = history.concat(completedTasks);
-        tasks = tasks.filter(task => !task.completed);
-        saveTasks();
-        renderTasks();
+    const checkDateChange = () => {
+        const today = new Date().toLocaleDateString('de-DE');
+        const completedTasks = tasks.filter(task => task.completed && task.createdDate !== today);
+        if (completedTasks.length > 0) {
+            history = history.concat(completedTasks);
+            tasks = tasks.filter(task => !task.completed || task.createdDate === today);
+            saveTasks();
+            renderTasks();
+        }
     };
 
     const toggleDeleteMode = () => {
         deleteMode = !deleteMode;
         toggleDeleteModeButton.textContent = deleteMode ? 'Löschmodus beenden' : 'Löschmodus';
         deleteSelectedButton.classList.toggle('hidden', !deleteMode);
+
+        // Entfernt die Markierung der Aufgaben nach Beendigung des Löschmodus
+        if (!deleteMode) {
+            tasks.forEach((task, index) => {
+                task.selectedForDelete = false;
+                taskList.children[index].classList.remove('selected-for-delete');
+            });
+        }
     };
 
     const deleteSelectedTasks = () => {
         tasks = tasks.filter(task => !task.selectedForDelete);
         saveTasks();
         renderTasks();
-        toggleDeleteMode();
+        toggleDeleteMode(); // Beendet den Löschmodus nach dem Löschen
     };
 
     const saveTasks = () => {
@@ -153,13 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'none';
     };
 
-    const scheduleNextDayCheck = () => {
-        const now = new Date();
-        const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
-        setTimeout(() => {
-            startNewDay();
-            scheduleNextDayCheck(); // Reschedule for the next day
-        }, msUntilMidnight);
+    const checkForNewDay = () => {
+        const today = new Date().toLocaleDateString('de-DE');
+        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
+
+        if (lastCheckDate !== today) {
+            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
+            localStorage.setItem('lastCheckDate', today);
+        }
     };
 
     addTaskButton.addEventListener('click', addTask);
@@ -176,5 +189,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTime();
     setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
-    scheduleNextDayCheck(); // Start the first check for midnight
+    setInterval(checkForNewDay, 60000); // Überprüft alle 60 Sekunden, ob ein neuer Tag begonnen hat
 });
