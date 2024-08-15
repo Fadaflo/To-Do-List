@@ -152,23 +152,31 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTasksModal.style.display = 'none';
     };
 
+    // Download the backup file
     const createBackup = () => {
         if (history.length > 0) {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
             const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
 
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-
-            document.body.appendChild(link);
-
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-
+            if (navigator.userAgent.includes('wv') || navigator.userAgent.includes('Android')) {
+                // Handle WebView scenario
+                const url = URL.createObjectURL(blob);
+                window.location.href = url;
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 100);
+            } else {
+                // Handle normal browser scenario
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
         }
