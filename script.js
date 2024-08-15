@@ -164,14 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
             link.href = url;
             link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
 
-            if (navigator.userAgent.match(/Android|iPhone|iPad|iPod/i)) {
-                // For mobile devices, append link to the body
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                link.click(); // For desktop
-            }
+            // Append to the body, click and remove the link (cross-device solution)
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
             URL.revokeObjectURL(url);
         } else {
