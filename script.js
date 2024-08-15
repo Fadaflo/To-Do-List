@@ -166,10 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Append to the body, click and remove the link (cross-device solution)
             document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
 
-            URL.revokeObjectURL(url);
+            setTimeout(() => {
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100); // 100ms Verzögerung, um den Download auf mobilen Geräten zu unterstützen
+
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
         }
