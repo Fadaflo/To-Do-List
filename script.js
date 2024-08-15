@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentDate = document.getElementById('currentDate');
     const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
-    const deleteSelectedButton = document.getElementById('deleteSelectedButton');
     const historyList = document.getElementById('historyList');
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -108,15 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleDeleteMode = () => {
         deleteMode = !deleteMode;
-        toggleDeleteModeButton.textContent = deleteMode ? 'Löschmodus beenden' : 'Löschmodus';
-        deleteSelectedButton.classList.toggle('hidden', !deleteMode);
-
-        // Entfernt die Markierung der Aufgaben nach Beendigung des Löschmodus
-        if (!deleteMode) {
-            tasks.forEach((task, index) => {
-                task.selectedForDelete = false;
-                taskList.children[index].classList.remove('selected-for-delete');
-            });
+        if (deleteMode) {
+            toggleDeleteModeButton.textContent = 'Löschen';
+        } else {
+            toggleDeleteModeButton.textContent = 'Löschmodus';
+            deleteSelectedTasks();
         }
     };
 
@@ -124,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.filter(task => !task.selectedForDelete);
         saveTasks();
         renderTasks();
-        toggleDeleteMode(); // Beendet den Löschmodus nach dem Löschen
     };
 
     const saveTasks = () => {
@@ -158,15 +152,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const createBackup = () => {
-        const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
-        const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
-        const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-        link.click();
-        URL.revokeObjectURL(url);
+        if (history.length > 0) {
+            const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
+            const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
+            const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } else {
+            alert('Keine erledigten Aufgaben zum Sichern.');
+        }
         closeBackupModal();
         showConfirmationModal();
     };
@@ -193,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
     closeHistoryButton.addEventListener('click', closeHistoryModal);
     closeConfirmationButton.addEventListener('click', closeConfirmationModal);
     toggleDeleteModeButton.addEventListener('click', toggleDeleteMode);
-    deleteSelectedButton.addEventListener('click', deleteSelectedTasks);
 
     renderDate();
     renderTime();
