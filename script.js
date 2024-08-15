@@ -100,6 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const checkForNewDay = () => {
+        const today = new Date().toLocaleDateString('de-DE');
+        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
+
+        if (lastCheckDate !== today) {
+            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
+            localStorage.setItem('lastCheckDate', today);
+        }
+    };
+
     const toggleDeleteMode = () => {
         deleteMode = !deleteMode;
         toggleDeleteModeButton.textContent = deleteMode ? 'Löschmodus beenden' : 'Löschmodus';
@@ -165,16 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'none';
     };
 
-    const checkForNewDay = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
-
-        if (lastCheckDate !== today) {
-            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
-            localStorage.setItem('lastCheckDate', today);
-        }
-    };
-
     addTaskButton.addEventListener('click', addTask);
     viewHistoryButton.addEventListener('click', openHistoryModal);
     backupButton.addEventListener('click', openBackupModal);
@@ -190,4 +190,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
     setInterval(checkForNewDay, 60000); // Überprüft alle 60 Sekunden, ob ein neuer Tag begonnen hat
+    checkForNewDay(); // Überprüft das Datum bei jedem Start der App
 });
