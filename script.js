@@ -156,8 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createBackup = () => {
         if (history.length > 0) {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
-            const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
-            const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
+            const blob = new Blob([backupContent], { type: 'text/plain;charset=utf-8' });
 
             const downloadFilename = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
 
