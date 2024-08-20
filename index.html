@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To Do Liste</title>
+    <title>Meine To-Do Liste</title>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="title">To Do Liste</h1>
+        <h1 class="title">Meine To-Do Liste</h1>
         <p id="currentDate" class="date"></p>
         <p id="currentTime" class="time"></p>
         <div class="task-input">
@@ -18,11 +18,9 @@
         </div>
         <ul id="taskList" class="task-list"></ul>
         <div class="button-container">
-            <div class="button-row">
-                <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
-                <button id="viewHistoryButton" class="button">Verlauf</button>
-            </div>
-            <button id="saveTasksButton" class="button full-width">Speichern</button>
+            <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
+            <button id="deleteSelectedButton" class="button hidden">Auswahl löschen</button>
+            <button id="viewHistoryButton" class="button">Verlauf</button>
         </div>
     </div>
     
@@ -30,8 +28,8 @@
         <div class="modal-container">
             <h2 class="modal-title">Erledigte Aufgaben</h2>
             <ul id="historyList" class="task-list"></ul>
-            <button id="backupButton" class="modal-button">Backup erstellen</button>
-            <button id="closeHistoryButton" class="modal-button">Schließen</button>
+            <button id="backupButton" class="button">Backup erstellen</button>
+            <button id="closeHistoryButton" class="button">Schließen</button>
         </div>
     </div>
     
@@ -51,17 +49,6 @@
             <h2 class="modal-title">Bestätigung</h2>
             <p>Das Backup war erfolgreich!</p>
             <button id="closeConfirmationButton" class="modal-button">OK</button>
-        </div>
-    </div>
-
-    <div id="saveTasksModal" class="modal hidden">
-        <div class="modal-container">
-            <h2 class="modal-title">Speichern</h2>
-            <p>Möchtest du alle erledigten Aufgaben in den Verlauf verschieben?</p>
-            <div class="modal-buttons">
-                <button id="confirmSaveButton" class="modal-button">Ja</button>
-                <button id="cancelSaveButton" class="modal-button">Nein</button>
-            </div>
         </div>
     </div>
 
