@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
     const viewHistoryButton = document.getElementById('viewHistoryButton');
-    const saveTasksButton = document.getElementById('saveTasksButton');
     const backupButton = document.getElementById('backupButton');
     const confirmBackupButton = document.getElementById('confirmBackupButton');
     const cancelBackupButton = document.getElementById('cancelBackupButton');
@@ -12,9 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyModal = document.getElementById('historyModal');
     const backupModal = document.getElementById('backupModal');
     const confirmationModal = document.getElementById('confirmationModal');
-    const saveTasksModal = document.getElementById('saveTasksModal');
-    const confirmSaveButton = document.getElementById('confirmSaveButton');
-    const cancelSaveButton = document.getElementById('cancelSaveButton');
     const currentDate = document.getElementById('currentDate');
     const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
@@ -85,41 +81,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addTask = () => {
         if (taskInput.value.trim() !== '') {
-            const today = new Date().toLocaleDateString('de-DE');
-            tasks.push({ text: taskInput.value.trim(), completed: false, createdDate: today });
+            tasks.push({ text: taskInput.value.trim(), completed: false });
             taskInput.value = '';
             saveTasks();
             renderTasks();
         }
     };
 
-    const saveCompletedTasks = () => {
+    const startNewDay = () => {
         const completedTasks = tasks.filter(task => task.completed);
-        if (completedTasks.length > 0) {
-            completedTasks.forEach(task => {
-                task.completedDate = new Date().toLocaleDateString('de-DE');
-            });
-            history = history.concat(completedTasks);
-            tasks = tasks.filter(task => !task.completed);
-            saveTasks();
-            renderTasks();
-        }
+        history = history.concat(completedTasks);
+        tasks = tasks.filter(task => !task.completed);
+        saveTasks();
+        renderTasks();
     };
 
     const toggleDeleteMode = () => {
         deleteMode = !deleteMode;
-        if (deleteMode) {
-            toggleDeleteModeButton.textContent = 'Löschen';
-        } else {
-            toggleDeleteModeButton.textContent = 'Löschmodus';
-            deleteSelectedTasks();
-        }
+        toggleDeleteModeButton.textContent = deleteMode ? 'Löschmodus beenden' : 'Löschmodus';
+        deleteSelectedButton.classList.toggle('hidden', !deleteMode);
     };
 
     const deleteSelectedTasks = () => {
         tasks = tasks.filter(task => !task.selectedForDelete);
         saveTasks();
         renderTasks();
+        toggleDeleteMode();
     };
 
     const saveTasks = () => {
@@ -144,42 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
         backupModal.style.display = 'none';
     };
 
-    const openSaveTasksModal = () => {
-        saveTasksModal.style.display = 'flex';
-    };
-
-    const closeSaveTasksModal = () => {
-        saveTasksModal.style.display = 'none';
-    };
-
-    // Download the backup file
     const createBackup = () => {
-        if (history.length > 0) {
-            const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
-            const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
-            const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
-
-            if (navigator.userAgent.includes('wv') || navigator.userAgent.includes('Android')) {
-                // Handle WebView scenario
-                const url = URL.createObjectURL(blob);
-                window.location.href = url;
-                setTimeout(() => {
-                    URL.revokeObjectURL(url);
-                }, 100);
-            } else {
-                // Handle normal browser scenario
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }
-        } else {
-            alert('Keine erledigten Aufgaben zum Sichern.');
-        }
+        const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
+        const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
+        const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+        link.click();
+        URL.revokeObjectURL(url);
         closeBackupModal();
         showConfirmationModal();
     };
@@ -192,23 +153,28 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'none';
     };
 
+    const scheduleNextDayCheck = () => {
+        const now = new Date();
+        const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
+        setTimeout(() => {
+            startNewDay();
+            scheduleNextDayCheck();
+        }, msUntilMidnight);
+    };
+
     addTaskButton.addEventListener('click', addTask);
     viewHistoryButton.addEventListener('click', openHistoryModal);
-    saveTasksButton.addEventListener('click', openSaveTasksModal);
-    confirmSaveButton.addEventListener('click', () => {
-        saveCompletedTasks();
-        closeSaveTasksModal();
-    });
-    cancelSaveButton.addEventListener('click', closeSaveTasksModal);
     backupButton.addEventListener('click', openBackupModal);
     confirmBackupButton.addEventListener('click', createBackup);
     cancelBackupButton.addEventListener('click', closeBackupModal);
     closeHistoryButton.addEventListener('click', closeHistoryModal);
     closeConfirmationButton.addEventListener('click', closeConfirmationModal);
     toggleDeleteModeButton.addEventListener('click', toggleDeleteMode);
+    deleteSelectedButton.addEventListener('click', deleteSelectedTasks);
 
     renderDate();
     renderTime();
-    setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
+    setInterval(renderTime, 1000);
     renderTasks();
+    scheduleNextDayCheck();
 });
