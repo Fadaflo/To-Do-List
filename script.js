@@ -160,28 +160,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
 
-            // Für normale Browser und Android WebView
-            const downloadFilename = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = downloadFilename;
-
-            if (navigator.userAgent.includes('wv') || navigator.userAgent.includes('Android')) {
-                // In WebView oder Android einfach den Link klicken
-                document.body.appendChild(anchor);
-                anchor.click();
-                document.body.removeChild(anchor);
-                URL.revokeObjectURL(url);
-            } else {
-                // Normaler Browser
-                document.body.appendChild(anchor);
-                anchor.click();
-                document.body.removeChild(anchor);
-                URL.revokeObjectURL(url);
-            }
+            // Datei in neuem Tab öffnen, um den Download zu triggern
+            window.open(url, '_blank');
 
             // Bestätigung anzeigen
             showConfirmationModal();
+
+            // URL freigeben
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 1000);
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
         }
