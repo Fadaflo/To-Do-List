@@ -18,9 +18,11 @@
         </div>
         <ul id="taskList" class="task-list"></ul>
         <div class="button-container">
-            <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
-            <button id="deleteSelectedButton" class="button hidden">Auswahl löschen</button>
-            <button id="viewHistoryButton" class="button">Verlauf</button>
+            <div class="button-row">
+                <button id="toggleDeleteModeButton" class="button">Löschmodus</button>
+                <button id="viewHistoryButton" class="button">Verlauf</button>
+            </div>
+            <button id="saveTasksButton" class="button full-width">Speichern</button>
         </div>
     </div>
     
@@ -49,6 +51,17 @@
             <h2 class="modal-title">Bestätigung</h2>
             <p>Das Backup war erfolgreich!</p>
             <button id="closeConfirmationButton" class="modal-button">OK</button>
+        </div>
+    </div>
+
+    <div id="saveTasksModal" class="modal hidden">
+        <div class="modal-container">
+            <h2 class="modal-title">Speichern</h2>
+            <p>Möchtest du alle erledigten Aufgaben in den Verlauf verschieben?</p>
+            <div class="modal-buttons">
+                <button id="confirmSaveButton" class="modal-button">Ja</button>
+                <button id="cancelSaveButton" class="modal-button">Nein</button>
+            </div>
         </div>
     </div>
 
