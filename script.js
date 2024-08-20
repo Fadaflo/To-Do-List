@@ -152,28 +152,29 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTasksModal.style.display = 'none';
     };
 
-    // Download the backup file directly in the app
+    // Download the backup file directly in the app as a .txt file
     const createBackup = () => {
         if (history.length > 0) {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
             const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
 
-            // Versuch, die Datei direkt in der App herunterzuladen
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+            const downloadFilename = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
 
-            // Füge den Anker zur Seite hinzu und klicke ihn
-            document.body.appendChild(anchor);
-            anchor.click();
+            // Verwende den Download-Mechanismus direkt innerhalb der App
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = downloadFilename;
 
-            // Entferne den Anker und revoziere die URL
-            document.body.removeChild(anchor);
-            URL.revokeObjectURL(url);
+            // Klicke den Link automatisch zum Herunterladen
+            document.body.appendChild(link);
+            link.click();
 
-            // Zeige das Bestätigungsmodal
+            // Entferne den Link nach dem Download
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            // Zeige eine Bestätigung
             showConfirmationModal();
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
