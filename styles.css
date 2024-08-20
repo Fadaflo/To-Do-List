@@ -15,7 +15,7 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    max-width: 400px;
+    max-width: 300px; /* Max-Breite auf 360px reduziert */
     width: 100%;
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
@@ -122,7 +122,7 @@ body {
 
 .button-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between; /* Buttons nebeneinander anordnen */
     margin-bottom: 20px;
 }
 
@@ -137,6 +137,7 @@ body {
     background: linear-gradient(45deg, #00c8a5, #007a6f);
     box-shadow: 0 0 10px rgba(0, 200, 165, 0.5);
     margin: 0 5px;
+    width: 48%; /* Buttons auf 48% Breite setzen */
 }
 
 .button:hover {
@@ -159,7 +160,7 @@ body {
 }
 
 .modal-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(25, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
     max-width: 300px;
@@ -180,9 +181,12 @@ body {
 
 .modal-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Buttons nebeneinander anordnen */
+    flex-wrap: nowrap; /* Verhindert, dass die Buttons umbrechen */
     margin-top: 20px;
+    width: 100%; /* Stelle sicher, dass der Container die volle Breite nutzt */
 }
+
 
 .modal-button {
     padding: 10px;
@@ -192,8 +196,9 @@ body {
     color: #0f0f3d;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    width: 45%;
+    width: 48%; /* Modal-Buttons auf 48% Breite setzen */
     box-shadow: 0 0 10px rgba(0, 200, 165, 0.5);
+    text-align: center;
 }
 
 .modal-button:hover {
@@ -203,4 +208,23 @@ body {
 
 .hidden {
     display: none;
+}
+
+.task-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+    background: #00c8a5;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+    background: #007a6f;
 }
