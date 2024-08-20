@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
     const viewHistoryButton = document.getElementById('viewHistoryButton');
+    const saveTasksButton = document.getElementById('saveTasksButton');
     const backupButton = document.getElementById('backupButton');
     const confirmBackupButton = document.getElementById('confirmBackupButton');
     const cancelBackupButton = document.getElementById('cancelBackupButton');
@@ -11,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyModal = document.getElementById('historyModal');
     const backupModal = document.getElementById('backupModal');
     const confirmationModal = document.getElementById('confirmationModal');
+    const saveTasksModal = document.getElementById('saveTasksModal');
+    const confirmSaveButton = document.getElementById('confirmSaveButton');
+    const cancelSaveButton = document.getElementById('cancelSaveButton');
     const currentDate = document.getElementById('currentDate');
     const currentTime = document.getElementById('currentTime');
     const toggleDeleteModeButton = document.getElementById('toggleDeleteModeButton');
@@ -89,12 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const checkDateChange = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const completedTasks = tasks.filter(task => task.completed && task.createdDate !== today);
+    const saveCompletedTasks = () => {
+        const completedTasks = tasks.filter(task => task.completed);
         if (completedTasks.length > 0) {
+            completedTasks.forEach(task => {
+                task.completedDate = new Date().toLocaleDateString('de-DE');
+            });
             history = history.concat(completedTasks);
-            tasks = tasks.filter(task => !task.completed || task.createdDate === today);
+            tasks = tasks.filter(task => !task.completed);
             saveTasks();
             renderTasks();
         }
@@ -102,15 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleDeleteMode = () => {
         deleteMode = !deleteMode;
-        toggleDeleteModeButton.textContent = deleteMode ? 'Löschmodus beenden' : 'Löschmodus';
-        deleteSelectedButton.classList.toggle('hidden', !deleteMode);
-
-        // Entfernt die Markierung der Aufgaben nach Beendigung des Löschmodus
-        if (!deleteMode) {
-            tasks.forEach((task, index) => {
-                task.selectedForDelete = false;
-                taskList.children[index].classList.remove('selected-for-delete');
-            });
+        if (deleteMode) {
+            toggleDeleteModeButton.textContent = 'Löschen';
+        } else {
+            toggleDeleteModeButton.textContent = 'Löschmodus';
+            deleteSelectedTasks();
         }
     };
 
@@ -118,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.filter(task => !task.selectedForDelete);
         saveTasks();
         renderTasks();
-        toggleDeleteMode(); // Beendet den Löschmodus nach dem Löschen
     };
 
     const saveTasks = () => {
@@ -143,18 +144,48 @@ document.addEventListener('DOMContentLoaded', () => {
         backupModal.style.display = 'none';
     };
 
+    const openSaveTasksModal = () => {
+        saveTasksModal.style.display = 'flex';
+    };
+
+    const closeSaveTasksModal = () => {
+        saveTasksModal.style.display = 'none';
+    };
+
+    // Download the backup file
     const createBackup = () => {
-        const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
-        const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
-        const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
-        link.click();
-        URL.revokeObjectURL(url);
+        if (history.length > 0) {
+            const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
+            const formattedBackup = `Erledigte Aufgaben:\n\n${backupContent}`;
+            const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            // Für normale Browser und Android WebView
+            const downloadFilename = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = downloadFilename;
+
+            if (navigator.userAgent.includes('wv') || navigator.userAgent.includes('Android')) {
+                // In WebView oder Android einfach den Link klicken
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+                URL.revokeObjectURL(url);
+            } else {
+                // Normaler Browser
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+                URL.revokeObjectURL(url);
+            }
+
+            // Bestätigung anzeigen
+            showConfirmationModal();
+        } else {
+            alert('Keine erledigten Aufgaben zum Sichern.');
+        }
         closeBackupModal();
-        showConfirmationModal();
     };
 
     const showConfirmationModal = () => {
@@ -165,29 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'none';
     };
 
-    const checkForNewDay = () => {
-        const today = new Date().toLocaleDateString('de-DE');
-        const lastCheckDate = localStorage.getItem('lastCheckDate') || today;
-
-        if (lastCheckDate !== today) {
-            checkDateChange(); // Überprüfe, ob der Tag gewechselt hat
-            localStorage.setItem('lastCheckDate', today);
-        }
-    };
-
     addTaskButton.addEventListener('click', addTask);
     viewHistoryButton.addEventListener('click', openHistoryModal);
+    saveTasksButton.addEventListener('click', openSaveTasksModal);
+    confirmSaveButton.addEventListener('click', () => {
+        saveCompletedTasks();
+        closeSaveTasksModal();
+    });
+    cancelSaveButton.addEventListener('click', closeSaveTasksModal);
     backupButton.addEventListener('click', openBackupModal);
     confirmBackupButton.addEventListener('click', createBackup);
     cancelBackupButton.addEventListener('click', closeBackupModal);
     closeHistoryButton.addEventListener('click', closeHistoryModal);
     closeConfirmationButton.addEventListener('click', closeConfirmationModal);
     toggleDeleteModeButton.addEventListener('click', toggleDeleteMode);
-    deleteSelectedButton.addEventListener('click', deleteSelectedTasks);
 
     renderDate();
     renderTime();
     setInterval(renderTime, 1000); // Aktualisiert die Uhr jede Sekunde
     renderTasks();
-    setInterval(checkForNewDay, 60000); // Überprüft alle 60 Sekunden, ob ein neuer Tag begonnen hat
 });
