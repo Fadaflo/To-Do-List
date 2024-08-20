@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTasksModal.style.display = 'none';
     };
 
-    // Download the backup file
+    // Download the backup file directly in the app
     const createBackup = () => {
         if (history.length > 0) {
             const backupContent = history.map(task => `• ${task.text}\n   - Erledigt am: ${task.completedDate || 'Datum unbekannt'}`).join('\n\n');
@@ -160,16 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const blob = new Blob([formattedBackup], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
 
-            // Datei in neuem Tab öffnen, um den Download zu triggern
-            window.open(url, '_blank');
+            // Versuch, die Datei direkt in der App herunterzuladen
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `backup_erledigte_aufgaben_${new Date().toLocaleDateString('de-DE')}.txt`;
 
-            // Bestätigung anzeigen
+            // Füge den Anker zur Seite hinzu und klicke ihn
+            document.body.appendChild(anchor);
+            anchor.click();
+
+            // Entferne den Anker und revoziere die URL
+            document.body.removeChild(anchor);
+            URL.revokeObjectURL(url);
+
+            // Zeige das Bestätigungsmodal
             showConfirmationModal();
-
-            // URL freigeben
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 1000);
         } else {
             alert('Keine erledigten Aufgaben zum Sichern.');
         }
